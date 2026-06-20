@@ -1,32 +1,42 @@
 import { auth, provider, db } from './firebase-config.js';
 import { signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import { ref, push, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 // --- CONFIGURAÇÃO CLOUDINARY ---
 const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/ddt5zbqih/image/upload';
-// ATENÇÃO: Crie um "Upload Preset" não assinado no Cloudinary e coloque o nome dele aqui!
-const CLOUDINARY_UPLOAD_PRESET = 'Brasil'; 
+const CLOUDINARY_UPLOAD_PRESET = 'Brasil'; // Lembre-se: TEM QUE SER "UNSIGNED" NO CLOUDINARY
 
 let currentUserData = null;
 
-// Elementos DOM
+// Elementos DOM Principais
 const authSection = document.getElementById('auth-section');
 const loginBox = document.getElementById('login-box');
 const profileSetup = document.getElementById('profile-setup');
 const appSection = document.getElementById('app-section');
 
-// --- AUTENTICAÇÃO E PERFIL ---
+// --- SISTEMA DE ABAS (NAVEGAÇÃO) ---
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    // Remove classe active de todos
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    
+    // Adiciona no clicado
+    const target = e.currentTarget.getAttribute('data-target');
+    e.currentTarget.classList.add('active');
+    document.getElementById(target).classList.add('active');
+  });
+});
+
+// --- AUTENTICAÇÃO E PERFIL INICIAL ---
 document.getElementById('btn-google-login').addEventListener('click', () => {
   signInWithPopup(auth, provider).catch(error => console.error("Erro no login:", error));
 });
 
-document.getElementById('btn-logout').addEventListener('click', () => {
-  signOut(auth);
-});
+document.getElementById('btn-logout').addEventListener('click', () => { signOut(auth); });
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    // Verifica se o usuário já tem perfil salvo no Realtime DB
     const userRef = ref(db, 'users/' + user.uid);
     onValue(userRef, (snapshot) => {
       const data = snapshot.val();
@@ -34,7 +44,6 @@ onAuthStateChanged(auth, (user) => {
         currentUserData = { uid: user.uid, ...data };
         iniciarApp();
       } else {
-        // Novo usuário, mostra setup de perfil
         loginBox.classList.add('hidden');
         profileSetup.classList.remove('hidden');
       }
@@ -47,43 +56,98 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
+// Função para fazer o upload da imagem pro Cloudinary
+async function uploadToCloudinary(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+  try {
+    const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.error) {
+      console.error("Erro retornado pelo Cloudinary:", data.error.message);
+      alert(`Erro no Cloudinary: ${data.error.message}\nVerifique se o preset 'Brasil' é Unsigned.`);
+      return null;
+    }
+    return data.secure_url;
+  } catch (err) {
+    console.error("Falha na requisição Cloudinary", err);
+    alert("Falha na conexão com o Cloudinary.");
+    return null;
+  }
+}
+
+// Salvar perfil pela primeira vez
 document.getElementById('btn-save-profile').addEventListener('click', async () => {
   const username = document.getElementById('username-input').value;
   const fileInput = document.getElementById('profile-pic-input');
-  if (!username) return alert("Escolha um nome!");
+  if (!username) return alert("Defina seu codinome!");
 
-  let photoUrl = auth.currentUser.photoURL; // Padrão: foto do Google
+  let photoUrl = auth.currentUser.photoURL; 
 
   if (fileInput.files.length > 0) {
-    const formData = new FormData();
-    formData.append('file', fileInput.files[0]);
-    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-
-    try {
-      document.getElementById('btn-save-profile').innerText = "Enviando...";
-      const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-      const data = await res.json();
-      if(data.secure_url) photoUrl = data.secure_url;
-    } catch (err) {
-      console.error("Erro no Cloudinary", err);
-      alert("Erro ao enviar foto. Usando a do Google.");
-    }
+    document.getElementById('btn-save-profile').innerText = "Processando Uplink...";
+    const uploadedUrl = await uploadToCloudinary(fileInput.files[0]);
+    if (uploadedUrl) photoUrl = uploadedUrl;
   }
 
-  // Salva no Firebase
   set(ref(db, 'users/' + auth.currentUser.uid), { username, photoUrl });
-  document.getElementById('btn-save-profile').innerText = "Salvar e Entrar";
+  document.getElementById('btn-save-profile').innerText = "Iniciar Sistema";
 });
 
 function iniciarApp() {
   authSection.classList.add('hidden');
   appSection.classList.remove('hidden');
-  document.getElementById('user-display-name').innerText = currentUserData.username;
-  document.getElementById('user-avatar').src = currentUserData.photoUrl;
   
+  // Preenche dados no menu
+  document.getElementById('menu-username').innerText = currentUserData.username;
+  document.getElementById('menu-avatar').src = currentUserData.photoUrl;
+  
+  // Preenche dados na aba de edição de perfil
+  document.getElementById('edit-username-input').value = currentUserData.username;
+  document.getElementById('edit-avatar-preview').src = currentUserData.photoUrl;
+
   carregarChat();
   carregarApostas();
 }
+
+// --- EDITAR PERFIL (NOVA FUNÇÃO) ---
+document.getElementById('btn-update-profile').addEventListener('click', async () => {
+  const newUsername = document.getElementById('edit-username-input').value;
+  const fileInput = document.getElementById('edit-profile-pic-input');
+  
+  if (!newUsername) return alert("O codinome não pode ser vazio.");
+
+  let updates = { username: newUsername };
+  const btn = document.getElementById('btn-update-profile');
+
+  if (fileInput.files.length > 0) {
+    btn.innerText = "Enviando Nova Imagem...";
+    const uploadedUrl = await uploadToCloudinary(fileInput.files[0]);
+    if (uploadedUrl) {
+      updates.photoUrl = uploadedUrl;
+    }
+  }
+
+  btn.innerText = "Salvando no Banco de Dados...";
+  update(ref(db, 'users/' + auth.currentUser.uid), updates).then(() => {
+    btn.innerText = "Atualizar Dados";
+    alert("Perfil atualizado com sucesso!");
+    // O onValue inicial do AuthStateChanged não roda de novo automaticamente pra atualizar a UI globalmente de forma simples, 
+    // então atualizamos localmente na memória e UI:
+    currentUserData.username = updates.username;
+    if(updates.photoUrl) currentUserData.photoUrl = updates.photoUrl;
+    
+    document.getElementById('menu-username').innerText = currentUserData.username;
+    document.getElementById('menu-avatar').src = currentUserData.photoUrl;
+    document.getElementById('edit-avatar-preview').src = currentUserData.photoUrl;
+  }).catch(err => {
+    console.error(err);
+    alert("Erro ao salvar perfil.");
+    btn.innerText = "Atualizar Dados";
+  });
+});
 
 // --- CHAT ---
 document.getElementById('btn-send-chat').addEventListener('click', enviarMensagem);
@@ -107,7 +171,7 @@ function carregarChat() {
     container.innerHTML = '';
     snapshot.forEach(child => {
       const msg = child.val();
-      container.innerHTML += `<div class="chat-msg"><strong>${msg.nome}:</strong> ${msg.texto}</div>`;
+      container.innerHTML += `<div class="chat-msg"><strong>[${msg.nome}]:</strong> ${msg.texto}</div>`;
     });
     container.scrollTop = container.scrollHeight;
   });
@@ -117,7 +181,7 @@ function carregarChat() {
 document.getElementById('btn-create-bet').addEventListener('click', () => {
   const title = document.getElementById('bet-title').value;
   const isMoney = document.getElementById('bet-is-money').checked;
-  if (!title) return alert("Dê um título para a aposta!");
+  if (!title) return alert("Dê um título para o contrato!");
 
   push(ref(db, 'apostas'), {
     titulo: title,
@@ -141,35 +205,32 @@ function carregarApostas() {
       
       let html = `
         <div class="bet-card">
-          <h4>${aposta.titulo} ${aposta.comDinheiro ? '💵 (Com Dinheiro)' : '⚪ (Sem Dinheiro)'}</h4>
-          <p><strong>Anfitrião:</strong> ${aposta.hostNome}</p>
+          <h4>${aposta.titulo} ${aposta.comDinheiro ? '<i class="fas fa-dollar-sign text-verde"></i>' : '<i class="fas fa-eye text-azul"></i>'}</h4>
+          <p style="font-size:12px; color:#aaa;">Host: ${aposta.hostNome}</p>
           <ul>`;
       
-      // Renderiza as apostas feitas
       if (aposta.apostadores) {
         Object.values(aposta.apostadores).forEach(p => {
-          html += `<li><strong>${p.nome}</strong> apostou: ${p.palpite} ${aposta.comDinheiro ? `(R$ ${p.valor})` : ''}</li>`;
+          html += `<li><strong style="color:var(--neon-verde)">${p.nome}</strong>: ${p.palpite} ${aposta.comDinheiro ? `[R$ ${p.valor}]` : ''}</li>`;
         });
       }
       html += `</ul>`;
 
-      // Formulário para o próprio usuário apostar
       html += `
         <div style="margin-top:10px;">
-          <input type="text" id="palpite-${apostaId}" placeholder="Seu Palpite (Ex: 2x1)">
-          ${aposta.comDinheiro ? `<input type="number" id="valor-${apostaId}" placeholder="Valor R$" step="0.01">` : ''}
-          <button class="btn btn-verde" onclick="fazerAposta('${apostaId}', ${aposta.comDinheiro}, false)">Fazer minha Aposta</button>
+          <input type="text" id="palpite-${apostaId}" placeholder="Palpite (Ex: 2x1)">
+          ${aposta.comDinheiro ? `<input type="number" id="valor-${apostaId}" placeholder="R$" step="0.01">` : ''}
+          <button class="btn btn-neon-verde" style="padding: 8px; font-size:12px;" onclick="fazerAposta('${apostaId}', ${aposta.comDinheiro}, false)">Confirmar</button>
         </div>`;
 
-      // Formulário "Escolher por outro" (Apenas para o Anfitrião)
       if (isHost) {
         html += `
           <div class="proxy-bet-section">
-            <strong>👑 Painel do Anfitrião: Apostar por outro</strong>
-            <input type="text" id="proxy-nome-${apostaId}" placeholder="Nome do amigo">
-            <input type="text" id="proxy-palpite-${apostaId}" placeholder="Palpite dele">
-            ${aposta.comDinheiro ? `<input type="number" id="proxy-valor-${apostaId}" placeholder="Valor R$" step="0.01">` : ''}
-            <button class="btn btn-azul" onclick="fazerAposta('${apostaId}', ${aposta.comDinheiro}, true)">Registrar por Outro</button>
+            <span style="font-size:12px; color:var(--neon-azul);"><i class="fas fa-user-secret"></i> Acesso Host (Apostar por outro)</span>
+            <input type="text" id="proxy-nome-${apostaId}" placeholder="Codinome Alvo">
+            <input type="text" id="proxy-palpite-${apostaId}" placeholder="Palpite Alvo">
+            ${aposta.comDinheiro ? `<input type="number" id="proxy-valor-${apostaId}" placeholder="R$" step="0.01">` : ''}
+            <button class="btn btn-neon-azul" style="padding: 8px; font-size:12px;" onclick="fazerAposta('${apostaId}', ${aposta.comDinheiro}, true)">Inserir Dados</button>
           </div>`;
       }
       
@@ -179,7 +240,6 @@ function carregarApostas() {
   });
 }
 
-// Expõe a função para o escopo global para o botão inline (onclick) funcionar
 window.fazerAposta = function(apostaId, comDinheiro, isProxy) {
   let nomeApostador = currentUserData.username;
   let palpite = document.getElementById(`palpite-${apostaId}`).value;
@@ -190,15 +250,14 @@ window.fazerAposta = function(apostaId, comDinheiro, isProxy) {
     palpite = document.getElementById(`proxy-palpite-${apostaId}`).value;
   }
 
-  if (!palpite || (isProxy && !nomeApostador)) return alert("Preencha o palpite e o nome corretamente.");
+  if (!palpite || (isProxy && !nomeApostador)) return alert("Dados insuficientes para processar palpite.");
 
   if (comDinheiro) {
     const inputValor = isProxy ? document.getElementById(`proxy-valor-${apostaId}`).value : document.getElementById(`valor-${apostaId}`).value;
     valor = parseFloat(inputValor);
     
-    // Regra: valor deve ser estritamente maior que R$ 1,00
     if (isNaN(valor) || valor <= 1.00) {
-      return alert("Apostas em dinheiro devem ter valor MAIOR que R$ 1,00 (ex: R$ 1,01).");
+      return alert("Apostas financeiras exigem transferência superior a R$ 1,00.");
     }
   }
 
@@ -208,4 +267,3 @@ window.fazerAposta = function(apostaId, comDinheiro, isProxy) {
     valor: valor.toFixed(2)
   });
 }
-
