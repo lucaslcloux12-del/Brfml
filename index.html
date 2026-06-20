@@ -3,93 +3,166 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Copa 2026 - Futuro</title>
+  <title>Copa 2026 - Bolão Brasil</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div id="auth-section" class="glass-container">
-    <h1 class="glitch" data-text="COPA 2026">COPA 2026</h1>
-    <h3 class="neon-text">SISTEMA DE APOSTAS</h3>
+  <div id="loading-screen" class="full-screen-center">
+    <div class="spinner"></div>
+    <p>Conectando aos servidores...</p>
+  </div>
+
+  <div id="auth-section" class="card-center hidden">
+    <div class="logo-copa">🇧🇷</div>
+    <h1>Copa do Mundo 2026</h1>
+    <p class="subtitle">Faça login para entrar no bolão</p>
     
     <div id="login-box">
-      <button id="btn-google-login" class="btn btn-neon-azul"><i class="fab fa-google"></i> Conectar com Google</button>
+      <button id="btn-google-login" class="btn btn-azul"><i class="fab fa-google"></i> Entrar com Google</button>
     </div>
 
     <div id="profile-setup" class="hidden">
-      <h2>Inicializar Perfil</h2>
-      <input type="text" id="username-input" placeholder="Codinome (Nome de Exibição)" required>
+      <h2>Complete seu Perfil</h2>
+      <input type="text" id="username-input" placeholder="Como quer ser chamado?" required>
       <label class="file-upload-label">
-        <i class="fas fa-upload"></i> Upload de Avatar
+        <i class="fas fa-camera"></i> Escolher Foto
         <input type="file" id="profile-pic-input" accept="image/*">
       </label>
-      <button id="btn-save-profile" class="btn btn-neon-verde">Iniciar Sistema</button>
+      <button id="btn-save-profile" class="btn btn-verde">Salvar e Entrar</button>
     </div>
   </div>
 
   <div id="app-section" class="app-layout hidden">
     
-    <aside class="sidebar glass-panel">
+    <aside class="sidebar">
       <div class="user-profile-mini">
-        <img id="menu-avatar" src="" alt="Avatar">
-        <span id="menu-username" class="neon-text-small"></span>
+        <img id="menu-avatar" src="" alt="Avatar" onclick="document.querySelector('[data-target=tab-profile]').click()">
+        <h3 id="menu-username"></h3>
       </div>
       <nav class="nav-menu">
-        <button class="nav-btn active" data-target="tab-chat"><i class="fas fa-comment-dots"></i> Resenha</button>
-        <button class="nav-btn" data-target="tab-bets"><i class="fas fa-trophy"></i> Bolão 2026</button>
+        <button class="nav-btn active" data-target="tab-chat"><i class="fas fa-comments"></i> Resenha</button>
+        <button class="nav-btn" data-target="tab-bets"><i class="fas fa-trophy"></i> Bolão</button>
+        <button class="nav-btn" data-target="tab-matches"><i class="fas fa-calendar-alt"></i> Jogos do Brasil</button>
         <button class="nav-btn" data-target="tab-profile"><i class="fas fa-user-edit"></i> Meu Perfil</button>
       </nav>
-      <button id="btn-logout" class="btn btn-outline-danger"><i class="fas fa-sign-out-alt"></i> Desconectar</button>
+      <button id="btn-logout" class="btn-logout-sidebar"><i class="fas fa-sign-out-alt"></i> Sair</button>
     </aside>
 
     <main class="content-area">
       
-      <section id="tab-chat" class="tab-content active glass-panel">
-        <h2><i class="fas fa-satellite-dish"></i> Terminal de Comunicação</h2>
-        <div id="chat-messages" class="messages-container terminal-bg"></div>
-        <div class="chat-input-area">
-          <input type="text" id="chat-input" placeholder="Transmita sua mensagem...">
-          <button id="btn-send-chat" class="btn btn-neon-verde"><i class="fas fa-paper-plane"></i></button>
+      <section id="tab-chat" class="tab-content active" style="padding: 0; display: flex; flex-direction: column;">
+        <div class="header-chat">
+          <h2><i class="fab fa-whatsapp"></i> Grupo da Copa</h2>
+          <span style="font-size: 12px; color: #ddd;">Segure numa mensagem para opções</span>
+        </div>
+        <div id="chat-messages" class="messages-container-wpp"></div>
+        <div class="chat-input-wrapper">
+          <div id="reply-context" class="hidden">
+            <div class="reply-content"><strong id="reply-name">Nome</strong><p id="reply-text">Mensagem...</p></div>
+            <button id="btn-cancel-reply" class="btn-icon"><i class="fas fa-times"></i></button>
+          </div>
+          <div class="chat-input-controls">
+            <input type="text" id="chat-input" placeholder="Mensagem...">
+            <button id="btn-send-chat" class="btn-send-circle"><i class="fas fa-paper-plane"></i></button>
+          </div>
         </div>
       </section>
 
-      <section id="tab-bets" class="tab-content glass-panel">
-        <h2><i class="fas fa-futbol"></i> Matriz de Apostas</h2>
+      <section id="tab-bets" class="tab-content">
+        <div class="header-aba"><h2>Central de Apostas</h2></div>
         
-        <div class="create-bet glass-panel-inner">
-          <h3><i class="fas fa-plus-circle"></i> Novo Contrato (Anfitrião)</h3>
-          <input type="text" id="bet-title" placeholder="Ex: Brasil x França - Placar">
-          <label class="cyber-checkbox">
-            <input type="checkbox" id="bet-is-money"> 
-            <span class="checkmark"></span> Aposta Financeira (Min R$1,01)
-          </label>
-          <button id="btn-create-bet" class="btn btn-neon-amarelo">Gerar Contrato</button>
+        <div class="bets-nav">
+          <button class="btn-sub-nav active" onclick="mostrarSubAba('destaques')">🔥 Em Alta</button>
+          <button class="btn-sub-nav" onclick="mostrarSubAba('todas')">🌎 Explorar</button>
+          <button class="btn-sub-nav" onclick="mostrarSubAba('codigo')">🔑 Usar Código</button>
+          <button class="btn-sub-nav" onclick="mostrarSubAba('criar')">➕ Criar</button>
         </div>
 
-        <div id="active-bets-container" class="bets-grid">
+        <div id="sub-aba-destaques" class="sub-aba-content active">
+          <p style="margin-bottom: 15px; color: #666;">As apostas públicas com mais participantes no momento.</p>
+          <div id="bets-destaques-container" class="bets-grid"></div>
+        </div>
+
+        <div id="sub-aba-todas" class="sub-aba-content hidden">
+          <div id="bets-todas-container" class="bets-grid"></div>
+        </div>
+
+        <div id="sub-aba-codigo" class="sub-aba-content hidden card">
+          <h3>Entrar em Aposta Privada</h3>
+          <p style="color: #666; margin-bottom: 15px;">Cole o código da aposta que te enviaram (ou clique direto no link recebido).</p>
+          <input type="text" id="join-code-input" placeholder="Ex: -O1aBcD2eFgH...">
+          <button id="btn-join-code" class="btn btn-azul" onclick="buscarApostaPorCodigo()"><i class="fas fa-search"></i> Buscar Bolão</button>
+        </div>
+
+        <div id="sub-aba-criar" class="sub-aba-content hidden card">
+          <h3>Nova Aposta</h3>
+          <input type="text" id="bet-title" placeholder="Título (Ex: Brasil 2x0 Marrocos)">
+          <div style="margin: 15px 0;">
+             <label style="margin-right: 15px;"><input type="radio" name="bet-visibility" value="publica" checked> 🌎 Pública (Aparece para todos)</label>
+             <label><input type="radio" name="bet-visibility" value="privada"> 🔒 Privada (Só com link/código)</label>
+          </div>
+          <label class="checkbox-container"><input type="checkbox" id="bet-is-money"> Aposta Financeira (R$)</label>
+          <button id="btn-create-bet" class="btn btn-amarelo">Criar Bolão</button>
+        </div>
+      </section>
+
+      <section id="tab-matches" class="tab-content">
+         <div class="header-aba"><h2>Tabela Fase de Grupos - 2026</h2></div>
+         <div class="matches-list">
+            <div class="match-card card">
+              <div class="match-date"><i class="fas fa-clock"></i> Sábado, 13 de Junho de 2026</div>
+              <div class="match-teams"><div class="team">🇧🇷 Brasil</div><div class="vs">X</div><div class="team">🇲🇦 Marrocos</div></div>
+              <div class="match-venue">New York / New Jersey Stadium</div>
+            </div>
           </div>
       </section>
 
-      <section id="tab-profile" class="tab-content glass-panel">
-        <h2><i class="fas fa-id-card"></i> Atualizar Credenciais</h2>
-        <div class="edit-profile-form glass-panel-inner">
-          <div class="current-avatar-preview">
-            <img id="edit-avatar-preview" src="" alt="Avatar Atual">
-          </div>
-          <input type="text" id="edit-username-input" placeholder="Novo Codinome">
-          <label class="file-upload-label">
-            <i class="fas fa-image"></i> Trocar Imagem do Sensor (Avatar)
-            <input type="file" id="edit-profile-pic-input" accept="image/*">
-          </label>
-          <button id="btn-update-profile" class="btn btn-neon-azul">Atualizar Dados</button>
+      <section id="tab-profile" class="tab-content">
+        <div class="header-aba"><h2>Meu Perfil</h2></div>
+        <div class="card card-center-aba">
+          <img id="edit-avatar-preview" src="" class="avatar-large">
+          <input type="text" id="edit-username-input" placeholder="Seu Nome">
+          <textarea id="edit-bio-input" placeholder="Biografia..." rows="3" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px;"></textarea>
+          <label class="file-upload-label"><i class="fas fa-image"></i> Trocar Foto<input type="file" id="edit-profile-pic-input" accept="image/*"></label>
+          <button id="btn-update-profile" class="btn btn-azul">Atualizar Perfil</button>
         </div>
       </section>
-
     </main>
+  </div>
+
+  <div id="invite-modal" class="modal-overlay hidden" style="z-index: 200;">
+    <div class="modal-content card" style="max-width: 400px;">
+      <button class="btn-icon close-btn" onclick="fecharModalConvite()"><i class="fas fa-times"></i></button>
+      <div id="invite-modal-content">
+        </div>
+    </div>
+  </div>
+
+  <div id="profile-modal" class="modal-overlay hidden">
+    <div class="modal-content card">
+      <button id="close-modal" class="btn-icon close-btn"><i class="fas fa-times"></i></button>
+      <img id="modal-avatar" src="" class="avatar-large">
+      <h2 id="modal-name">Nome</h2>
+      <p id="modal-bio" style="font-style: italic; color: #666; margin-bottom: 20px;">Sem biografia.</p>
+    </div>
   </div>
 
   <script type="module" src="firebase-config.js"></script>
   <script type="module" src="app.js"></script>
+  <script>
+    function mostrarSubAba(aba) {
+      document.querySelectorAll('.btn-sub-nav').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.sub-aba-content').forEach(c => c.classList.add('hidden'));
+      event.target.classList.add('active');
+      document.getElementById(`sub-aba-${aba}`).classList.remove('hidden');
+    }
+    function fecharModalConvite() {
+      document.getElementById('invite-modal').classList.add('hidden');
+      // Limpa a URL para não ficar abrindo o modal se recarregar
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  </script>
 </body>
 </html>
