@@ -154,3 +154,22 @@ input:focus { border-color: var(--neon-amarelo); box-shadow: 0 0 8px var(--neon-
   #btn-logout { width: auto; font-size: 0; padding: 10px; }
   #btn-logout i { margin: 0; font-size: 20px; }
 }
+/* --- NOVOS ESTILOS PARA BOLÃO, LINKS E CÓDIGOS --- */
+
+.bets-nav { overflow-x: auto; white-space: nowrap; padding-bottom: 5px; }
+.btn-sub-nav { display: inline-block; margin-right: 5px; }
+
+.action-buttons { display: flex; gap: 10px; margin-top: 10px; }
+.btn-outline { background: transparent; border: 2px solid var(--azul); color: var(--azul); padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; font-size: 13px; text-align: center; }
+.btn-outline:hover { background: var(--azul); color: white; }
+
+.badge-privada { background: #555; color: white; font-size: 11px; padding: 3px 8px; border-radius: 10px; position: absolute; top: 15px; left: 15px; }
+.badge-publica { background: var(--azul); color: white; font-size: 11px; padding: 3px 8px; border-radius: 10px; position: absolute; top: 15px; left: 15px; }
+
+.code-box { background: #f0f0f0; padding: 10px; border-radius: 5px; text-align: center; font-family: monospace; font-size: 16px; font-weight: bold; margin: 10px 0; letter-spacing: 1px; user-select: all; cursor: pointer; border: 1px dashed #aaa; }
+.code-box:hover { background: #e0e0e0; }
+
+.participant-count { font-size: 13px; color: #666; margin-bottom: 10px; }
+.participant-count i { color: var(--amarelo); margin-right: 5px; }
+
+#invite-modal-content input { font-size: 18px; text-align: center; }
