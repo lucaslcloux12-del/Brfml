@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copa 2026 - Bolão do Brasil</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="auth-section" class="container">
+    <h1>Copa do Mundo 2026 🇧🇷</h1>
+    <div id="login-box">
+      <button id="btn-google-login" class="btn btn-verde">Entrar com Google</button>
+    </div>
+
+    <div id="profile-setup" class="hidden">
+      <h2>Complete seu Perfil</h2>
+      <input type="text" id="username-input" placeholder="Escolha seu Nome de Exibição" required>
+      <label for="profile-pic-input">Foto de Perfil (Opcional):</label>
+      <input type="file" id="profile-pic-input" accept="image/*">
+      <button id="btn-save-profile" class="btn btn-amarelo">Salvar e Entrar</button>
+    </div>
+  </div>
+
+  <div id="app-section" class="hidden">
+    <header>
+      <div class="user-info">
+        <img id="user-avatar" src="" alt="Avatar">
+        <span id="user-display-name"></span>
+      </div>
+      <button id="btn-logout" class="btn btn-outline">Sair</button>
+    </header>
+
+    <main class="grid-layout">
+      <section class="chat-area card">
+        <h2>Resenha 💬</h2>
+        <div id="chat-messages" class="messages-container"></div>
+        <div class="chat-input-area">
+          <input type="text" id="chat-input" placeholder="Mande sua mensagem...">
+          <button id="btn-send-chat" class="btn btn-azul">Enviar</button>
+        </div>
+      </section>
+
+      <section class="bets-area card">
+        <h2>Bolão da Copa 🏆</h2>
+        
+        <div class="create-bet">
+          <h3>Criar Nova Aposta (Você será o Anfitrião)</h3>
+          <input type="text" id="bet-title" placeholder="Ex: Brasil x França - Placar">
+          <label>
+            <input type="checkbox" id="bet-is-money"> Aposta com Dinheiro (Mínimo R$1,01)
+          </label>
+          <button id="btn-create-bet" class="btn btn-verde">Criar Aposta</button>
+        </div>
+
+        <div id="active-bets-container">
+          </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
+
