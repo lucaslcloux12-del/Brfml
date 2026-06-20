@@ -3,60 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Copa 2026 - Bolão do Brasil</title>
+  <title>Copa 2026 - Futuro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div id="auth-section" class="container">
-    <h1>Copa do Mundo 2026 🇧🇷</h1>
+  <div id="auth-section" class="glass-container">
+    <h1 class="glitch" data-text="COPA 2026">COPA 2026</h1>
+    <h3 class="neon-text">SISTEMA DE APOSTAS</h3>
+    
     <div id="login-box">
-      <button id="btn-google-login" class="btn btn-verde">Entrar com Google</button>
+      <button id="btn-google-login" class="btn btn-neon-azul"><i class="fab fa-google"></i> Conectar com Google</button>
     </div>
 
     <div id="profile-setup" class="hidden">
-      <h2>Complete seu Perfil</h2>
-      <input type="text" id="username-input" placeholder="Escolha seu Nome de Exibição" required>
-      <label for="profile-pic-input">Foto de Perfil (Opcional):</label>
-      <input type="file" id="profile-pic-input" accept="image/*">
-      <button id="btn-save-profile" class="btn btn-amarelo">Salvar e Entrar</button>
+      <h2>Inicializar Perfil</h2>
+      <input type="text" id="username-input" placeholder="Codinome (Nome de Exibição)" required>
+      <label class="file-upload-label">
+        <i class="fas fa-upload"></i> Upload de Avatar
+        <input type="file" id="profile-pic-input" accept="image/*">
+      </label>
+      <button id="btn-save-profile" class="btn btn-neon-verde">Iniciar Sistema</button>
     </div>
   </div>
 
-  <div id="app-section" class="hidden">
-    <header>
-      <div class="user-info">
-        <img id="user-avatar" src="" alt="Avatar">
-        <span id="user-display-name"></span>
+  <div id="app-section" class="app-layout hidden">
+    
+    <aside class="sidebar glass-panel">
+      <div class="user-profile-mini">
+        <img id="menu-avatar" src="" alt="Avatar">
+        <span id="menu-username" class="neon-text-small"></span>
       </div>
-      <button id="btn-logout" class="btn btn-outline">Sair</button>
-    </header>
+      <nav class="nav-menu">
+        <button class="nav-btn active" data-target="tab-chat"><i class="fas fa-comment-dots"></i> Resenha</button>
+        <button class="nav-btn" data-target="tab-bets"><i class="fas fa-trophy"></i> Bolão 2026</button>
+        <button class="nav-btn" data-target="tab-profile"><i class="fas fa-user-edit"></i> Meu Perfil</button>
+      </nav>
+      <button id="btn-logout" class="btn btn-outline-danger"><i class="fas fa-sign-out-alt"></i> Desconectar</button>
+    </aside>
 
-    <main class="grid-layout">
-      <section class="chat-area card">
-        <h2>Resenha 💬</h2>
-        <div id="chat-messages" class="messages-container"></div>
+    <main class="content-area">
+      
+      <section id="tab-chat" class="tab-content active glass-panel">
+        <h2><i class="fas fa-satellite-dish"></i> Terminal de Comunicação</h2>
+        <div id="chat-messages" class="messages-container terminal-bg"></div>
         <div class="chat-input-area">
-          <input type="text" id="chat-input" placeholder="Mande sua mensagem...">
-          <button id="btn-send-chat" class="btn btn-azul">Enviar</button>
+          <input type="text" id="chat-input" placeholder="Transmita sua mensagem...">
+          <button id="btn-send-chat" class="btn btn-neon-verde"><i class="fas fa-paper-plane"></i></button>
         </div>
       </section>
 
-      <section class="bets-area card">
-        <h2>Bolão da Copa 🏆</h2>
+      <section id="tab-bets" class="tab-content glass-panel">
+        <h2><i class="fas fa-futbol"></i> Matriz de Apostas</h2>
         
-        <div class="create-bet">
-          <h3>Criar Nova Aposta (Você será o Anfitrião)</h3>
+        <div class="create-bet glass-panel-inner">
+          <h3><i class="fas fa-plus-circle"></i> Novo Contrato (Anfitrião)</h3>
           <input type="text" id="bet-title" placeholder="Ex: Brasil x França - Placar">
-          <label>
-            <input type="checkbox" id="bet-is-money"> Aposta com Dinheiro (Mínimo R$1,01)
+          <label class="cyber-checkbox">
+            <input type="checkbox" id="bet-is-money"> 
+            <span class="checkmark"></span> Aposta Financeira (Min R$1,01)
           </label>
-          <button id="btn-create-bet" class="btn btn-verde">Criar Aposta</button>
+          <button id="btn-create-bet" class="btn btn-neon-amarelo">Gerar Contrato</button>
         </div>
 
-        <div id="active-bets-container">
+        <div id="active-bets-container" class="bets-grid">
           </div>
       </section>
+
+      <section id="tab-profile" class="tab-content glass-panel">
+        <h2><i class="fas fa-id-card"></i> Atualizar Credenciais</h2>
+        <div class="edit-profile-form glass-panel-inner">
+          <div class="current-avatar-preview">
+            <img id="edit-avatar-preview" src="" alt="Avatar Atual">
+          </div>
+          <input type="text" id="edit-username-input" placeholder="Novo Codinome">
+          <label class="file-upload-label">
+            <i class="fas fa-image"></i> Trocar Imagem do Sensor (Avatar)
+            <input type="file" id="edit-profile-pic-input" accept="image/*">
+          </label>
+          <button id="btn-update-profile" class="btn btn-neon-azul">Atualizar Dados</button>
+        </div>
+      </section>
+
     </main>
   </div>
 
@@ -64,4 +93,3 @@
   <script type="module" src="app.js"></script>
 </body>
 </html>
-
