@@ -9,11 +9,13 @@
 </head>
 <body>
 
+  <!-- TELA DE CARREGAMENTO -->
   <div id="loading-screen" class="full-screen-center">
     <div class="spinner"></div>
     <p>Conectando aos servidores...</p>
   </div>
 
+  <!-- TELA DE LOGIN -->
   <div id="auth-section" class="card-center hidden">
     <div class="logo-copa">🇧🇷</div>
     <h1>Copa do Mundo 2026</h1>
@@ -34,11 +36,18 @@
     </div>
   </div>
 
+  <!-- APLICATIVO PRINCIPAL -->
   <div id="app-section" class="app-layout hidden">
     
-    <aside class="sidebar">
+    <!-- BOTÃO HAMBÚRGUER -->
+    <button id="menu-toggle" class="hamburger">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- MENU LATERAL NAV -->
+    <aside id="sidebar" class="sidebar">
       <div class="user-profile-mini">
-        <img id="menu-avatar" src="" alt="Avatar" onclick="document.querySelector('[data-target=tab-profile]').click()">
+        <img id="menu-avatar" src="" alt="Avatar">
         <h3 id="menu-username"></h3>
       </div>
       <nav class="nav-menu">
@@ -50,8 +59,13 @@
       <button id="btn-logout" class="btn-logout-sidebar"><i class="fas fa-sign-out-alt"></i> Sair</button>
     </aside>
 
+    <!-- BACKDROP (Sombra atrás do menu) -->
+    <div id="menu-backdrop" class="menu-backdrop hidden"></div>
+
+    <!-- ÁREA DE CONTEÚDO (ABAS) -->
     <main class="content-area">
       
+      <!-- ABA: CHAT -->
       <section id="tab-chat" class="tab-content active" style="padding: 0; display: flex; flex-direction: column;">
         <div class="header-chat">
           <h2><i class="fab fa-whatsapp"></i> Grupo da Copa</h2>
@@ -70,57 +84,70 @@
         </div>
       </section>
 
+      <!-- ABA: APOSTAS -->
       <section id="tab-bets" class="tab-content">
-        <div class="header-aba"><h2>Central de Apostas</h2></div>
+        <div class="header-aba" style="margin-top: 50px;"><h2>Central de Apostas</h2></div>
         
         <div class="bets-nav">
           <button class="btn-sub-nav active" onclick="mostrarSubAba('destaques')">🔥 Em Alta</button>
           <button class="btn-sub-nav" onclick="mostrarSubAba('todas')">🌎 Explorar</button>
-          <button class="btn-sub-nav" onclick="mostrarSubAba('codigo')">🔑 Usar Código</button>
+          <button class="btn-sub-nav" onclick="mostrarSubAba('meus')">👑 Meus Bolões</button>
+          <button class="btn-sub-nav" onclick="mostrarSubAba('codigo')">🔑 Código</button>
           <button class="btn-sub-nav" onclick="mostrarSubAba('criar')">➕ Criar</button>
         </div>
 
         <div id="sub-aba-destaques" class="sub-aba-content active">
-          <p style="margin-bottom: 15px; color: #666;">As apostas públicas com mais participantes no momento.</p>
           <div id="bets-destaques-container" class="bets-grid"></div>
         </div>
-
         <div id="sub-aba-todas" class="sub-aba-content hidden">
           <div id="bets-todas-container" class="bets-grid"></div>
         </div>
-
+        <div id="sub-aba-meus" class="sub-aba-content hidden">
+          <p style="color: #666; margin-bottom: 15px;">Apostas em que você é o Anfitrião (Host).</p>
+          <div id="bets-meus-container" class="bets-grid"></div>
+        </div>
         <div id="sub-aba-codigo" class="sub-aba-content hidden card">
           <h3>Entrar em Aposta Privada</h3>
-          <p style="color: #666; margin-bottom: 15px;">Cole o código da aposta que te enviaram (ou clique direto no link recebido).</p>
-          <input type="text" id="join-code-input" placeholder="Ex: -O1aBcD2eFgH...">
-          <button id="btn-join-code" class="btn btn-azul" onclick="buscarApostaPorCodigo()"><i class="fas fa-search"></i> Buscar Bolão</button>
+          <input type="text" id="join-code-input" placeholder="Código: -O1aBcD2eFgH...">
+          <button class="btn btn-azul" onclick="buscarApostaPorCodigo()"><i class="fas fa-search"></i> Buscar</button>
         </div>
-
         <div id="sub-aba-criar" class="sub-aba-content hidden card">
           <h3>Nova Aposta</h3>
           <input type="text" id="bet-title" placeholder="Título (Ex: Brasil 2x0 Marrocos)">
           <div style="margin: 15px 0;">
-             <label style="margin-right: 15px;"><input type="radio" name="bet-visibility" value="publica" checked> 🌎 Pública (Aparece para todos)</label>
-             <label><input type="radio" name="bet-visibility" value="privada"> 🔒 Privada (Só com link/código)</label>
+             <label style="margin-right: 15px;"><input type="radio" name="bet-visibility" value="publica" checked> 🌎 Pública</label>
+             <label><input type="radio" name="bet-visibility" value="privada"> 🔒 Privada</label>
           </div>
           <label class="checkbox-container"><input type="checkbox" id="bet-is-money"> Aposta Financeira (R$)</label>
           <button id="btn-create-bet" class="btn btn-amarelo">Criar Bolão</button>
         </div>
       </section>
 
+      <!-- ABA: JOGOS DO BRASIL (TABELA) -->
       <section id="tab-matches" class="tab-content">
-         <div class="header-aba"><h2>Tabela Fase de Grupos - 2026</h2></div>
-         <div class="matches-list">
-            <div class="match-card card">
-              <div class="match-date"><i class="fas fa-clock"></i> Sábado, 13 de Junho de 2026</div>
-              <div class="match-teams"><div class="team">🇧🇷 Brasil</div><div class="vs">X</div><div class="team">🇲🇦 Marrocos</div></div>
-              <div class="match-venue">New York / New Jersey Stadium</div>
-            </div>
-          </div>
+         <div class="header-aba" style="margin-top: 50px;"><h2>Tabela Fase de Grupos</h2></div>
+         
+         <!-- PAINEL ADMIN: Visível apenas para o Lucas -->
+         <div id="admin-match-controls" class="hidden card" style="border: 2px solid var(--verde); margin-bottom: 20px;">
+           <h3 style="color: var(--verde);"><i class="fas fa-shield-alt"></i> Controle da Tabela (Admin)</h3>
+           <input type="text" id="admin-match-date" placeholder="Data e Hora (Ex: 13/06/2026 - 16:00)">
+           <div style="display: flex; gap: 10px;">
+             <input type="text" id="admin-match-t1" placeholder="Time 1 (Ex: 🇧🇷 Brasil)">
+             <span style="align-self: center; font-weight: bold;">X</span>
+             <input type="text" id="admin-match-t2" placeholder="Time 2 (Ex: 🇲🇦 Marrocos)">
+           </div>
+           <input type="text" id="admin-match-venue" placeholder="Local/Estádio (Ex: MetLife Stadium)">
+           <button class="btn btn-verde" onclick="adicionarJogoBD()">Adicionar Jogo à Tabela</button>
+         </div>
+
+         <div id="matches-container" class="matches-list">
+            <!-- Jogos gerados pelo Firebase aqui -->
+         </div>
       </section>
 
+      <!-- ABA: PERFIL -->
       <section id="tab-profile" class="tab-content">
-        <div class="header-aba"><h2>Meu Perfil</h2></div>
+        <div class="header-aba" style="margin-top: 50px;"><h2>Meu Perfil</h2></div>
         <div class="card card-center-aba">
           <img id="edit-avatar-preview" src="" class="avatar-large">
           <input type="text" id="edit-username-input" placeholder="Seu Nome">
@@ -132,15 +159,16 @@
     </main>
   </div>
 
-  <div id="invite-modal" class="modal-overlay hidden" style="z-index: 200;">
-    <div class="modal-content card" style="max-width: 400px;">
+  <!-- MODAL DE CONVITE -->
+  <div id="invite-modal" class="modal-overlay hidden" style="z-index: 2000;">
+    <div class="modal-content card">
       <button class="btn-icon close-btn" onclick="fecharModalConvite()"><i class="fas fa-times"></i></button>
-      <div id="invite-modal-content">
-        </div>
+      <div id="invite-modal-content"></div>
     </div>
   </div>
 
-  <div id="profile-modal" class="modal-overlay hidden">
+  <!-- MODAL PERFIL -->
+  <div id="profile-modal" class="modal-overlay hidden" style="z-index: 2000;">
     <div class="modal-content card">
       <button id="close-modal" class="btn-icon close-btn"><i class="fas fa-times"></i></button>
       <img id="modal-avatar" src="" class="avatar-large">
@@ -160,7 +188,6 @@
     }
     function fecharModalConvite() {
       document.getElementById('invite-modal').classList.add('hidden');
-      // Limpa a URL para não ficar abrindo o modal se recarregar
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   </script>
