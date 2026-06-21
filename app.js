@@ -13,7 +13,7 @@ const loadingScreen = document.getElementById('loading-screen');
 const authSection = document.getElementById('auth-section');
 const appSection = document.getElementById('app-section');
 
-// === MENU HAMBÚRGUER E NAVEGAÇÃO ===
+// === MENU HAMBÚRGUER E NAVEGAÇÃO CORRIGIDA ===
 const menuToggle = document.getElementById('menu-toggle');
 const sidebar = document.getElementById('sidebar');
 const menuBackdrop = document.getElementById('menu-backdrop');
@@ -28,25 +28,29 @@ menuToggle.addEventListener('click', toggleMenu);
 menuBackdrop.addEventListener('click', toggleMenu);
 
 document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    // Esconde todas as abas e desativa os botões
+  btn.addEventListener('click', function() { // Usa "function()" para poder usar o "this"
+    // Remove as marcações de todos
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     
-    // Ativa a escolhida
-    e.currentTarget.classList.add('active');
-    document.getElementById(e.currentTarget.getAttribute('data-target')).classList.add('active');
+    // Adiciona na aba selecionada
+    this.classList.add('active');
+    const targetId = this.getAttribute('data-target');
+    document.getElementById(targetId).classList.add('active');
     
-    // Fecha o menu lateral
+    // Fecha o menu depois de clicar
     if(sidebar.classList.contains('open')) toggleMenu();
 
-    // Se for chat, rola pra baixo e marca leitura
-    if(e.currentTarget.getAttribute('data-target') === 'tab-chat') {
-       const c = document.getElementById('chat-messages');
-       c.scrollTop = c.scrollHeight;
+    // Se for o chat, rola para a última mensagem perfeitamente
+    if(targetId === 'tab-chat') {
+       setTimeout(() => { // Timeout mínimo só pro navegador entender que a aba abriu
+         const c = document.getElementById('chat-messages');
+         c.scrollTop = c.scrollHeight;
+       }, 50);
     }
   });
 });
+
 
 // === AUTENTICAÇÃO ===
 document.getElementById('btn-google-login').addEventListener('click', () => { signInWithPopup(auth, provider); });
