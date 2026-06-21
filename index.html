@@ -146,18 +146,25 @@
       </section>
 
       <!-- ABA: PERFIL -->
-      <section id="tab-profile" class="tab-content">
+            <section id="tab-profile" class="tab-content">
         <div class="header-aba" style="margin-top: 50px;"><h2>Meu Perfil</h2></div>
         <div class="card card-center-aba">
           <img id="edit-avatar-preview" src="" class="avatar-large">
           <input type="text" id="edit-username-input" placeholder="Seu Nome">
           <textarea id="edit-bio-input" placeholder="Biografia..." rows="3" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px;"></textarea>
+          
+          <div style="margin: 15px 0; text-align: left; background: var(--cinza-claro); padding: 15px; border-radius: 8px;">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: bold;">
+              <input type="checkbox" id="dark-mode-toggle" style="width: 20px; height: 20px; margin: 0;"> 
+              🌙 Ativar Modo Escuro
+            </label>
+          </div>
+
           <label class="file-upload-label"><i class="fas fa-image"></i> Trocar Foto<input type="file" id="edit-profile-pic-input" accept="image/*"></label>
           <button id="btn-update-profile" class="btn btn-azul">Atualizar Perfil</button>
         </div>
       </section>
-    </main>
-  </div>
+
 
   <!-- MODAL DE CONVITE -->
   <div id="invite-modal" class="modal-overlay hidden" style="z-index: 2000;">
