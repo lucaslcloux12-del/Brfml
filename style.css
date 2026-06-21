@@ -6,74 +6,67 @@
   --fundo-app: #efeae2; 
   --texto: #333333;
   --cinza-claro: #e4e6eb;
+  
+  /* Cores do Chat Claro */
   --wpp-mine: #dcf8c6;
   --wpp-theirs: #ffffff;
+  --wpp-bg: #e5ddd5;
+  --reply-bg: rgba(0,0,0,0.05);
+  --reply-border: #128C7E;
+  --reply-text: #666;
 }
 
-* { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+/* === MODO ESCURO === */
+[data-theme="dark"] {
+  --verde: #00b34a;
+  --branco: #1f2c34;
+  --fundo-app: #111b21;
+  --texto: #e9edef;
+  --cinza-claro: #2a3942;
+  --azul: #66b2ff;
+  
+  /* Cores exatas do print (WhatsApp Dark) */
+  --wpp-mine: #005c4b;
+  --wpp-theirs: #202c33;
+  --wpp-bg: #0b141a;
+  --reply-bg: #025143; /* Fundo da mensagem respondida no balão verde */
+  --reply-border: #21c063; /* Barrinha verde clara na esquerda */
+  --reply-text: #e9edef;
+}
 
-/* TRAVA A TELA: O SEGREDO PRO MOBILE FUNCIONAR */
-html, body { height: 100dvh; width: 100vw; overflow: hidden; background-color: var(--fundo-app); color: var(--texto); }
+* { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; }
+
+/* Trava a tela pro celular não zoar */
+html, body { height: 100dvh; width: 100vw; overflow: hidden; background-color: var(--fundo-app); color: var(--texto); transition: background 0.3s, color 0.3s; }
 .hidden { display: none !important; }
 
-/* Carregamento e Login */
-.full-screen-center { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100dvh; background: var(--fundo-app); }
-.spinner { border: 4px solid rgba(0,0,0,0.1); border-left-color: var(--verde); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px;}
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-.card-center { max-width: 400px; margin: 10vh auto; text-align: center; background: var(--branco); padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-top: 6px solid var(--verde); }
-.card { background: var(--branco); padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-.logo-copa { font-size: 50px; margin-bottom: 10px; }
+/* Containers Básicos */
+.card { background: var(--branco); padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: background 0.3s; }
+input[type="text"], input[type="number"], textarea, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--cinza-claro); border-radius: 8px; background: var(--branco); color: var(--texto); outline: none; }
 h1, h2, h3, h4 { color: var(--azul); margin-bottom: 10px; }
-
-/* Botoes e Inputs */
 .btn { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; width: 100%; margin: 10px 0; transition: 0.2s; }
-.btn-verde { background: var(--verde); color: var(--branco); }
-.btn-amarelo { background: var(--amarelo); color: var(--azul); }
-.btn-azul { background: var(--azul); color: var(--branco); }
-input[type="text"], input[type="number"], textarea, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; background: #fafafa; outline: none; }
+.btn-verde { background: var(--verde); color: #fff; }
+.btn-amarelo { background: var(--amarelo); color: #333; }
+.btn-azul { background: var(--azul); color: #fff; }
 .file-upload-label { display: block; padding: 12px; background: var(--cinza-claro); cursor: pointer; border-radius: 8px; font-weight: bold; text-align: center;}
 .file-upload-label input { display: none; }
 
-/* === ESTRUTURA DO APLICATIVO (O GRANDE CONSERTO) === */
+/* === ESTRUTURA DO APP === */
 .app-layout { display: flex; height: 100dvh; width: 100vw; overflow: hidden; }
 .content-area { flex-grow: 1; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
-/* ABAS PADRÃO (Rolam a tela normalmente) */
-.tab-content { display: none; width: 100%; height: 100%; overflow-y: auto; padding: 20px; padding-top: 70px; /* espaço do botão menu */ }
-.tab-content.active { display: block; }
+/* Força bruta pra abas: Se não for ativa, SOME! */
+.tab-content { display: none !important; width: 100%; height: 100%; overflow-y: auto; padding: 20px; padding-top: 70px; }
+.tab-content.active { display: block !important; }
+#tab-chat.active { display: flex !important; flex-direction: column; padding: 0; height: 100%; overflow: hidden; }
+
 .header-aba { margin-bottom: 20px; border-bottom: 2px solid var(--amarelo); padding-bottom: 10px; }
 .card-center-aba { max-width: 500px; margin: 0 auto; }
 
-/* ABA CHAT (Comportamento Especial - não rola a tela toda) */
-#tab-chat.active { display: flex; flex-direction: column; padding: 0; height: 100%; overflow: hidden; }
-
-/* === MENU HAMBÚRGUER E SIDEBAR === */
-.hamburger { position: fixed; top: 15px; left: 15px; z-index: 1500; background: var(--verde); border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-.hamburger span { width: 22px; height: 3px; background: white; transition: 0.4s; border-radius: 2px; }
-.hamburger.active { background: #d32f2f; }
-.hamburger.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-.hamburger.active span:nth-child(2) { opacity: 0; }
-.hamburger.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-
-.sidebar { position: fixed; top: 0; left: 0; height: 100dvh; width: 280px; background: white; z-index: 1000; transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 2px 0 15px rgba(0,0,0,0.1); padding-top: 70px; display: flex; flex-direction: column;}
-.sidebar.open { transform: translateX(0); }
-.menu-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(0,0,0,0.5); z-index: 900; opacity: 0; pointer-events: none; transition: 0.3s; }
-.menu-backdrop.open { opacity: 1; pointer-events: auto; }
-
-.user-profile-mini { padding: 10px 20px 20px 20px; text-align: center; border-bottom: 1px solid #eee; }
-.user-profile-mini img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--amarelo);}
-.nav-menu { flex-grow: 1; padding: 20px 10px; display: flex; flex-direction: column; gap: 5px; overflow-y: auto; }
-.nav-btn { background: transparent; border: none; padding: 15px; text-align: left; font-size: 16px; font-weight: 600; color: #555; border-radius: 8px; cursor: pointer; }
-.nav-btn i { width: 25px; color: var(--verde); pointer-events: none; }
-.nav-btn.active { background: rgba(0, 156, 59, 0.1); color: var(--verde); }
-.btn-logout-sidebar { margin: 20px; padding: 12px; background: #fff1f1; color: #d32f2f; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
-/* === CHAT WHATSAPP === */
+/* === CHAT WHATSAPP ESTILO NATIVO === */
 .header-chat { background: var(--verde); color: white; padding: 15px 20px; padding-left: 70px; display: flex; flex-direction: column; flex-shrink: 0; z-index: 50; }
 .header-chat h2 { color: white; margin: 0; font-size: 18px;}
 
-/* AQUI O FUNDO NÃO SE MEXE, SÓ AS MENSAGENS */
 .messages-container-wpp { 
     flex-grow: 1; 
     overflow-y: auto; 
@@ -81,31 +74,77 @@ input[type="text"], input[type="number"], textarea, select { width: 100%; paddin
     display: flex; 
     flex-direction: column; 
     gap: 10px; 
-    background-color: #e5ddd5;
+    background-color: var(--wpp-bg);
     background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
-    background-attachment: local; 
+    background-blend-mode: overlay;
+    opacity: 0.9;
 }
 
 .msg-row { display: flex; width: 100%; margin-bottom: 5px; position: relative;}
 .msg-row.mine { justify-content: flex-end; }
 .msg-row.theirs { justify-content: flex-start; }
-.chat-avatar-small { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; margin: 0 10px; cursor: pointer; align-self: flex-end; margin-bottom: 5px;}
 
-.bubble { max-width: 75%; padding: 8px 12px; border-radius: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; word-wrap: break-word; font-size: 15px; user-select: none; }
-.msg-row.theirs .bubble { background: var(--wpp-theirs); border-bottom-left-radius: 0; }
-.msg-row.mine .bubble { background: var(--wpp-mine); border-bottom-right-radius: 0; }
+.bubble { max-width: 75%; padding: 6px 10px 8px 10px; border-radius: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; word-wrap: break-word; font-size: 15px; user-select: none; }
+.msg-row.theirs .bubble { background: var(--wpp-theirs); border-top-left-radius: 0; }
+.msg-row.mine .bubble { background: var(--wpp-mine); border-top-right-radius: 0; }
+
 .bubble-name { font-size: 12px; font-weight: bold; color: var(--verde); margin-bottom: 3px; display: block; }
-.bubble-time { font-size: 10px; color: #999; float: right; margin-left: 10px; margin-top: 5px;}
+.bubble-time { font-size: 11px; color: rgba(255,255,255,0.7); float: right; margin-left: 10px; margin-top: 5px; line-height: 15px;}
+.msg-row.theirs .bubble-time { color: #888; } /* Cor da hora na msg do outro */
 
-/* CAIXA DE TEXTO (Sempre flutuando na base) */
-.chat-input-wrapper { 
-    flex-shrink: 0; 
-    background: #f0f0f0; 
-    padding: 10px 20px; 
-    display: flex; 
-    flex-direction: column; 
-    z-index: 100; 
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+/* === ESTILO DA RESPOSTA (IGUAL SUA FOTO) === */
+.replied-to-box { 
+    background: var(--reply-bg); 
+    border-left: 4px solid var(--reply-border); 
+    padding: 6px 10px; 
+    border-radius: 4px; 
+    margin-bottom: 5px; 
+    font-size: 14px; 
+    display: flex;
+    flex-direction: column;
+}
+.reply-name { font-weight: bold; color: var(--reply-border); font-size: 13px; margin-bottom: 2px;}
+.reply-text { color: var(--reply-text); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+
+/* CAIXA DE TEXTO NO FUNDO */
+.chat-input-wrapper { flex-shrink: 0; background: var(--branco); padding: 10px 20px; display: flex; flex-direction: column; z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); padding-bottom: env(safe-area-inset-bottom, 15px); }
+#reply-context { background: var(--fundo-app); border-left: 4px solid var(--reply-border); padding: 10px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+.chat-input-controls { display: flex; gap: 10px; align-items: center; }
+.chat-input-controls input { margin: 0; border-radius: 25px; padding: 12px 20px; border: none; background: var(--cinza-claro); flex-grow: 1; }
+.btn-send-circle { width: 45px; height: 45px; border-radius: 50%; border: none; background: var(--verde); color: white; cursor: pointer; font-size: 16px; flex-shrink: 0;}
+
+/* === MENU HAMBÚRGUER (Restante mantido) === */
+.hamburger { position: fixed; top: 15px; left: 15px; z-index: 1500; background: var(--verde); border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+.hamburger span { width: 22px; height: 3px; background: white; transition: 0.4s; border-radius: 2px; }
+.hamburger.active { background: #d32f2f; }
+.hamburger.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+.sidebar { position: fixed; top: 0; left: 0; height: 100dvh; width: 280px; background: var(--branco); z-index: 1000; transform: translateX(-100%); transition: transform 0.3s; box-shadow: 2px 0 15px rgba(0,0,0,0.1); padding-top: 70px; display: flex; flex-direction: column;}
+.sidebar.open { transform: translateX(0); }
+.menu-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: rgba(0,0,0,0.5); z-index: 900; opacity: 0; pointer-events: none; transition: 0.3s; }
+.menu-backdrop.open { opacity: 1; pointer-events: auto; }
+.user-profile-mini { padding: 10px 20px 20px 20px; text-align: center; border-bottom: 1px solid var(--cinza-claro); }
+.user-profile-mini img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--amarelo);}
+.nav-menu { flex-grow: 1; padding: 20px 10px; display: flex; flex-direction: column; gap: 5px; overflow-y: auto; }
+.nav-btn { background: transparent; border: none; padding: 15px; text-align: left; font-size: 16px; font-weight: 600; color: var(--texto); border-radius: 8px; cursor: pointer; }
+.nav-btn.active { background: var(--cinza-claro); color: var(--verde); }
+
+/* Componentes Bolão e Jogos */
+.bets-nav { display: flex; overflow-x: auto; white-space: nowrap; padding-bottom: 10px; gap: 10px; margin-bottom: 20px; }
+.btn-sub-nav { padding: 10px 15px; border: none; border-radius: 20px; font-weight: bold; background: var(--cinza-claro); color: var(--texto); cursor: pointer; }
+.btn-sub-nav.active { background: var(--azul); color: #fff; }
+.bets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding-bottom: 40px;}
+.bet-card { border-top: 4px solid var(--amarelo); position: relative; padding-top: 40px; }
+.action-buttons { display: flex; gap: 10px; margin-top: 10px; }
+.btn-outline { background: transparent; border: 2px solid var(--azul); color: var(--azul); padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; flex: 1; font-size: 13px; text-align: center; }
+.badge-privada { background: #555; color: white; font-size: 11px; padding: 3px 8px; border-radius: 10px; position: absolute; top: 15px; left: 15px; }
+.badge-publica { background: var(--azul); color: white; font-size: 11px; padding: 3px 8px; border-radius: 10px; position: absolute; top: 15px; left: 15px; }
+.participant-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; background: var(--cinza-claro); padding: 8px; border-radius: 8px;}
+.participant-item img { width: 30px; height: 30px; border-radius: 50%; }
+
+.matches-list { display: flex; flex-direction: column; gap: 15px; max-width: 600px; padding-bottom: 40px; }
+.match-card { text-align: center; border-left: 5px solid var(--verde); position: relative; }
     padding-bottom: env(safe-area-inset-bottom, 15px); /* Ajuste mágico pro iPhone */
 }
 #reply-context { background: #e9edef; border-left: 4px solid var(--verde); padding: 10px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
